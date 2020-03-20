@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"log"
-	"net/http"
 	"net/url"
 	"time"
 
@@ -65,36 +63,4 @@ type Product struct {
 	Quantity    int       `db:"quantity" json:"quantity"`
 	DateCreated time.Time `db:"date_created" json:"date_created"`
 	DateUpdated time.Time `db:"date_updated" json:"date_updated"`
-}
-
-// ProductService has handler method for dealing with Products.
-type ProductService struct {
-	db *sqlx.DB
-}
-
-// List is a HTTP Handler for returning a list of Products.
-func (p *ProductService) List(w http.ResponseWriter, r *http.Request) {
-	list := []Product{}
-
-	const q = `SELECT product_id, name, cost, quantity, date_updated, date_created FROM products`
-
-	if err := p.db.Select(&list, q); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("error querying db", err)
-		return
-	}
-
-	data, err := json.Marshal(list)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("error marshalling result", err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(data); err != nil {
-		log.Println("error writing result", err)
-	}
-
 }
