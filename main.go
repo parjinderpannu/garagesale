@@ -144,7 +144,7 @@ func (p *ProductService) List(w http.ResponseWriter, r *http.Request) {
 
 	const q = `SELECT product_id, name, cost, quantity, date_updated, date_created FROM products`
 
-	if err := p.db.Select(list, q); err != nil {
+	if err := p.db.Select(&list, q); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("error querying db", err)
 		return
