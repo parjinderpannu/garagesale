@@ -91,14 +91,14 @@ func ListProducts(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(list)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("error marshalling", err)
+		log.Println("error marshalling result", err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(data); err != nil {
-		log.Println("error writing", err)
+		log.Println("error writing result", err)
 	}
 
 }
