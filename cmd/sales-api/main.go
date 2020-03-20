@@ -12,6 +12,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/parjinderpannu/garagesale/internal/platform/database"
+	"github.com/parjinderpannu/garagesale/internal/product"
 )
 
 func main() {
@@ -88,16 +89,6 @@ func main() {
 	}
 }
 
-//Product is an item we sell.
-type Product struct {
-	ID          string    `db:"product_id" json:"id"`
-	Name        string    `db:"name" json:"name"`
-	Cost        int       `db:"cost" json:"cost"`
-	Quantity    int       `db:"quantity" json:"quantity"`
-	DateCreated time.Time `db:"date_created" json:"date_created"`
-	DateUpdated time.Time `db:"date_updated" json:"date_updated"`
-}
-
 // ProductService has handler method for dealing with Products.
 type ProductService struct {
 	db *sqlx.DB
@@ -105,11 +96,8 @@ type ProductService struct {
 
 // List is a HTTP Handler for returning a list of Products.
 func (p *ProductService) List(w http.ResponseWriter, r *http.Request) {
-	list := []Product{}
-
-	const q = `SELECT product_id, name, cost, quantity, date_updated, date_created FROM products`
-
-	if err := p.db.Select(&list, q); err != nil {
+	list, err := product.List(p.db)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("error querying db", err)
 		return
