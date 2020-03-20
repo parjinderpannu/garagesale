@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	"github.com/parjinderpannu/garagesale/schema"
+	"github.com/parjinderpannu/garagesale/internal/platform/database"
+	"github.com/parjinderpannu/garagesale/internal/schema"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	// =========================================================================
 	// Setup Dependencies
 
-	db, err := openDB()
+	db, err := database.Open()
 	if err != nil {
 		log.Fatal(err)
 	}
