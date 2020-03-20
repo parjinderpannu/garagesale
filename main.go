@@ -76,16 +76,16 @@ func main() {
 
 //Product is an item we sell.
 type Product struct {
-	name     string
-	Cost     int
-	Quantity int
+	Name     string `json:"name"`
+	Cost     int    `json:"cost"`
+	Quantity int    `json:"quantity"`
 }
 
 // ListProducts is a HTTP Handler for returning a list of Products.
 func ListProducts(w http.ResponseWriter, r *http.Request) {
 	list := []Product{
-		{name: "Comic Books", Cost: 50, Quantity: 42},
-		{name: "McDonalds Toys", Cost: 75, Quantity: 120},
+		{Name: "Comic Books", Cost: 50, Quantity: 42},
+		{Name: "McDonalds Toys", Cost: 75, Quantity: 120},
 	}
 
 	data, err := json.Marshal(list)
