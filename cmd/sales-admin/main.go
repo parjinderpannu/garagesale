@@ -20,13 +20,6 @@ import (
 func main() {
 
 	// =========================================================================
-	// App Starting
-
-	log.Printf("main : Started")
-	// it happens when func main is done
-	defer log.Println("main : Completed")
-
-	// =========================================================================
 	// Setup Dependencies
 
 	db, err := openDB()
