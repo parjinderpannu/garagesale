@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -10,9 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/parjinderpannu/garagesale/cmd/sales-api/internal/handlers"
 	"github.com/parjinderpannu/garagesale/internal/platform/database"
-	"github.com/parjinderpannu/garagesale/internal/product"
 )
 
 func main() {
@@ -36,7 +34,7 @@ func main() {
 	// =========================================================================
 	// Start API Service
 
-	ps := ProductService{db: db}
+	ps := handlers.Product{DB: db}
 
 	api := http.Server{
 		Addr:         "localhost:8000",
@@ -87,33 +85,4 @@ func main() {
 			log.Fatalf("main : could not stop server gracefully : %v", err)
 		}
 	}
-}
-
-// ProductService has handler method for dealing with Products.
-type ProductService struct {
-	db *sqlx.DB
-}
-
-// List is a HTTP Handler for returning a list of Products.
-func (p *ProductService) List(w http.ResponseWriter, r *http.Request) {
-	list, err := product.List(p.db)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("error querying db", err)
-		return
-	}
-
-	data, err := json.Marshal(list)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println("error marshalling result", err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(data); err != nil {
-		log.Println("error writing result", err)
-	}
-
 }
