@@ -25,6 +25,11 @@ func main() {
 func run() error {
 
 	// =========================================================================
+	// Logging
+
+	log := log.New(os.Stdout, "SALES : ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+
+	// =========================================================================
 	// Configuration
 
 	var cfg struct {
@@ -89,7 +94,7 @@ func run() error {
 	// =========================================================================
 	// Start API Service
 
-	ps := handlers.Product{DB: db}
+	ps := handlers.Product{DB: db, Log: log}
 
 	api := http.Server{
 		Addr:         cfg.Web.Address,
