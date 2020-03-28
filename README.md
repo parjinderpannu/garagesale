@@ -10,3 +10,8 @@ import github.com/lib/pq # driver gets registed when you import the package. You
 note go.sum #verify version of mod we have Are same when we originally created it.  
 https://awesome-go.com/ --> "Database schema migration." --> "darwin"
 
+### Config links
+https://github.com/kelseyhightower/envconfig  
+https://github.com/peterbourgon/ff  
+
+
