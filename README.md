@@ -1,6 +1,10 @@
 # garagesale
 
+## How to run go run ./cmd/sales-api/
+export SALES_DB_DISABLE_TLS=true  
+
 ## Helpful links
+### database
 //awesome-go.com/#/database  
 https://github.com/jmoiron/sqlx  
 https://golang.org/pkg/database/sql/  
@@ -13,5 +17,6 @@ https://awesome-go.com/ --> "Database schema migration." --> "darwin"
 ### Config links
 https://github.com/kelseyhightower/envconfig  
 https://github.com/peterbourgon/ff  
+ 
 
 
