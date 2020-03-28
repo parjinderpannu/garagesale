@@ -13,14 +13,14 @@ type Config struct {
 	Name       string
 	User       string
 	Password   string
-	DisableSSL bool
+	DisableTLS bool
 }
 
 // Open knows how to open a database connection.
 func Open(cfg Config) (*sqlx.DB, error) {
 	q := url.Values{}
 	q.Set("sslmode", "require")
-	if cfg.DisableSSL {
+	if cfg.DisableTLS {
 		q.Set("sslmode", "disable")
 	}
 	q.Set("timezone", "utc")
