@@ -15,3 +15,19 @@ func List(db *sqlx.DB) ([]Product, error) {
 
 	return list, nil
 }
+
+// Retrieve returns a single Product
+func Retrieve(db *sqlx.DB, id string) (*Product, error) {
+	var p Product
+
+	const q = `SELECT 
+	product_id, name, cost, quantity, date_updated, date_created 
+	FROM products
+	WHERE product_id = $1`
+
+	if err := db.Get(&p, q, id); err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}

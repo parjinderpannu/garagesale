@@ -39,5 +39,30 @@ func (p *Product) List(w http.ResponseWriter, r *http.Request) {
 	if _, err := w.Write(data); err != nil {
 		p.Log.Println("error writing result", err)
 	}
+}
 
+// Retrieve gives a single Product.
+func (p *Product) Retrieve(w http.ResponseWriter, r *http.Request) {
+
+	id := "TODO"
+
+	prod, err := product.Retrieve(p.DB, id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		p.Log.Println("error querying db", err)
+		return
+	}
+
+	data, err := json.Marshal(prod)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		p.Log.Println("error marshalling result", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(data); err != nil {
+		p.Log.Println("error writing result", err)
+	}
 }

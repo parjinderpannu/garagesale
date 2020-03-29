@@ -16,7 +16,11 @@ https://awesome-go.com/ --> "Database schema migration." --> "darwin"
 
 ### Config links
 https://github.com/kelseyhightower/envconfig  
-https://github.com/peterbourgon/ff  
+https://github.com/peterbourgon/ff
+
+### routes
+https://awesome-go.com/#routers  --> chi  
+
  
 
 
