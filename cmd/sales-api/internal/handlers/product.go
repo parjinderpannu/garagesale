@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
 	"github.com/parjinderpannu/garagesale/internal/product"
 )
@@ -44,7 +45,7 @@ func (p *Product) List(w http.ResponseWriter, r *http.Request) {
 // Retrieve gives a single Product.
 func (p *Product) Retrieve(w http.ResponseWriter, r *http.Request) {
 
-	id := "TODO"
+	id := chi.URLParam(r, "id")
 
 	prod, err := product.Retrieve(p.DB, id)
 	if err != nil {
