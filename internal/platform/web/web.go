@@ -31,8 +31,12 @@ func (a *App) Handle(method, pattern string, h Handler) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		err := h(w, r)
 		if err != nil {
-			res := ErrorResponse{Error: err.Error()}
-			Respond(w, res, http.StatusInternalServerError)
+			res := ErrorResponse{
+				Error: err.Error(),
+			}
+			if err := Respond(w, res, http.StatusInternalServerError); err != nil {
+				a.log.Println(err)
+			}
 		}
 	}
 	a.mux.MethodFunc(method, pattern, fn)

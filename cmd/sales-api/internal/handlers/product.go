@@ -9,7 +9,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/parjinderpannu/garagesale/internal/platform/web"
 	"github.com/parjinderpannu/garagesale/internal/product"
-	"github.com/pkg/errors"
 )
 
 // Product has handler method for dealing with Products.
@@ -23,7 +22,7 @@ func (p *Product) List(w http.ResponseWriter, r *http.Request) error {
 
 	list, err := product.List(p.DB)
 	if err != nil {
-		return errors.Wrap(err, "getting product list")
+		return err
 	}
 
 	return web.Respond(w, list, http.StatusOK)
@@ -36,7 +35,7 @@ func (p *Product) Retrieve(w http.ResponseWriter, r *http.Request) error {
 
 	prod, err := product.Retrieve(p.DB, id)
 	if err != nil {
-		return errors.Wrapf(err, "getting product %q", id)
+		return err
 	}
 
 	return web.Respond(w, prod, http.StatusOK)
@@ -49,12 +48,12 @@ func (p *Product) Create(w http.ResponseWriter, r *http.Request) error {
 	var np product.NewProduct
 
 	if err := web.Decode(r, &np); err != nil {
-		return errors.Wrap(err, "decoding new product")
+		return err
 	}
 
 	prod, err := product.Create(p.DB, np, time.Now())
 	if err != nil {
-		return errors.Wrap(err, "creating new product")
+		return err
 	}
 
 	return web.Respond(w, prod, http.StatusCreated)
