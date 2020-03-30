@@ -63,8 +63,8 @@ func Create(db *sqlx.DB, np NewProduct, now time.Time) (*Product, error) {
 		Name:        np.Name,
 		Cost:        np.Cost,
 		Quantity:    np.Quantity,
-		DateCreated: now,
-		DateUpdated: now,
+		DateCreated: now.UTC(),
+		DateUpdated: now.UTC(),
 	}
 
 	const q = `INSERT INTO products
