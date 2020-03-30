@@ -31,11 +31,13 @@ func (a *App) Handle(method, pattern string, h Handler) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		err := h(w, r)
 		if err != nil {
-			res := ErrorResponse{
-				Error: err.Error(),
-			}
-			if err := Respond(w, res, http.StatusInternalServerError); err != nil {
-				a.log.Println(err)
+
+			// Log the error.
+			a.log.Printf("ERROR : %+v", err)
+
+			// Respond to the error.
+			if err := RespondError(w, err); err != nil {
+				a.log.Printf("ERROR : %v", err)
 			}
 		}
 	}
