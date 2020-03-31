@@ -13,6 +13,11 @@ func API(logger *log.Logger, db *sqlx.DB) http.Handler {
 
 	app := web.NewApp(logger)
 
+	{
+		c := Check{db: db}
+		app.Handle(http.MethodGet, "/v1/health", c.Health)
+	}
+
 	p := Product{DB: db, Log: logger}
 
 	app.Handle(http.MethodGet, "/v1/products", p.List)
