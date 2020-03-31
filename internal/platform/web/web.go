@@ -14,13 +14,16 @@ type Handler func(http.ResponseWriter, *http.Request) error
 type App struct {
 	mux *chi.Mux
 	log *log.Logger
+	mw  []Middleware
 }
 
-// NewApp Knows how to construct internal state for an App.
-func NewApp(logger *log.Logger) *App {
+// NewApp constructs an App to handle a set of routes.
+// Any Middleware provided will be ran for every request.
+func NewApp(logger *log.Logger, mw ...Middleware) *App {
 	return &App{
 		mux: chi.NewRouter(),
 		log: logger,
+		mw:  mw,
 	}
 }
 
@@ -28,17 +31,12 @@ func NewApp(logger *log.Logger) *App {
 // particular application handler.
 func (a *App) Handle(method, pattern string, h Handler) {
 
+	h = wrapMiddleware(a.mw, h)
+
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		err := h(w, r)
-		if err != nil {
-
+		if err := h(w, r); err != nil {
 			// Log the error.
-			a.log.Printf("ERROR : %+v", err)
-
-			// Respond to the error.
-			if err := RespondError(w, err); err != nil {
-				a.log.Printf("ERROR : %v", err)
-			}
+			a.log.Printf("ERROR : Unhandled error %v", err)
 		}
 	}
 	a.mux.MethodFunc(method, pattern, fn)
