@@ -21,6 +21,14 @@ https://github.com/peterbourgon/ff
 ### routes
 https://awesome-go.com/#routers  --> chi  
 
+### pprof
+https://golang.org/pkg/net/http/pprof/  
+cmd # hey -c 10 -n 15000 http://localhost:8000/v1/products  
+cmd # go tool pprof http://localhost:6060/debug/pprof/profile\?seconds\=8  
+cmd # top  
+cmd # top -cum  
+cmd # web  
+
  
 
 
