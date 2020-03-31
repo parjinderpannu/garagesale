@@ -43,8 +43,12 @@ func NewApp(logger *log.Logger, mw ...Middleware) *App {
 
 // Handle connects a method and URL pattern to a
 // particular application handler.
-func (a *App) Handle(method, pattern string, h Handler) {
+func (a *App) Handle(method, pattern string, h Handler, mw ...Middleware) {
 
+	// First wrap handler specific middleware around this handler.
+	h = wrapMiddleware(mw, h)
+
+	// Add the application's general middleware to the handler chain.
 	h = wrapMiddleware(a.mw, h)
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
