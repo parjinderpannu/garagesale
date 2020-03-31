@@ -1,6 +1,7 @@
 package mid
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -16,13 +17,18 @@ func Logger(log *log.Logger) web.Middleware {
 
 		h := func(w http.ResponseWriter, r *http.Request) error {
 
-			start := time.Now()
+			v, ok := r.Context().Value(web.KeyValues).(*web.Values)
+			if !ok {
+				return errors.New("web values missing from context")
+			}
 			// Run the handler chain and catch any propagated error.
 			err := before(w, r)
 
 			log.Printf(
-				"%s %s (%v)",
-				r.Method, r.URL.Path, time.Since(start),
+				"%d %s %s (%v)",
+				v.StatusCode,
+				r.Method, r.URL.Path,
+				time.Since(v.Start),
 			)
 
 			// Return the error to be handled further up the chain.
