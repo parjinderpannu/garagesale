@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/parjinderpannu/garagesale/internal/platform/auth"
 	"github.com/parjinderpannu/garagesale/internal/platform/web"
 	"github.com/parjinderpannu/garagesale/internal/user"
 	"github.com/pkg/errors"
@@ -13,7 +13,8 @@ import (
 
 // Users holds handlers for dealing with user.
 type Users struct {
-	DB *sqlx.DB
+	DB            *sqlx.DB
+	authenticator *auth.Authenticator
 }
 
 // Token generates an authentication token for a user. The client must include
@@ -41,9 +42,14 @@ func (u *Users) Token(ctx context.Context, w http.ResponseWriter, r *http.Reques
 			return errors.Wrap(err, "authenticating")
 		}
 	}
-	_ = claims
 
-	fmt.Printf("%+v\n", claims)
+	var tkn struct {
+		Token string `json:"token"`
+	}
+	tkn.Token, err = u.authenticator.GenerateToken(claims)
+	if err != nil {
+		return errors.Wrap(err, "generating token")
+	}
 
-	return nil
+	return web.Respond(ctx, w, tkn, http.StatusOK)
 }
