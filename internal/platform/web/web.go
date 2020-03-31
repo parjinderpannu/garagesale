@@ -22,7 +22,7 @@ type Values struct {
 }
 
 // Handler is the signature used by all applicaiton handlers in this service
-type Handler func(http.ResponseWriter, *http.Request) error
+type Handler func(context.Context, http.ResponseWriter, *http.Request) error
 
 // App is the entrypoint for all web applications.
 type App struct {
@@ -56,9 +56,8 @@ func (a *App) Handle(method, pattern string, h Handler) {
 		}
 
 		ctx := context.WithValue(r.Context(), KeyValues, &v)
-		r = r.WithContext(ctx)
 
-		if err := h(w, r); err != nil {
+		if err := h(ctx, w, r); err != nil {
 			// Log the error.
 			a.log.Printf("ERROR : Unhandled error %v", err)
 		}
