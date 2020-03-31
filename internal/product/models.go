@@ -16,9 +16,9 @@ type Product struct {
 
 // NewProduct is what we require from clients when adding a Product.
 type NewProduct struct {
-	Name     string `json:"name"`
-	Cost     int    `json:"cost"`
-	Quantity int    `json:"quantity"`
+	Name     string `json:"name" validate:"required"`
+	Cost     int    `json:"cost" validate:"gte=0"`
+	Quantity int    `json:"quantity" validate:"gte=1"`
 }
 
 // Sale represents one item of a transaction where some amount of a product was
