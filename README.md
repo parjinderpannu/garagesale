@@ -29,6 +29,13 @@ cmd # top
 cmd # top -cum  
 cmd # web  
 
+### metrics
+https://golang.org/pkg/expvar/  
+http://localhost:6060/debug/vars  
+hey -c 10 -n 123 http://localhost:8000/v1/products/gophers  
+expvarmon -ports=":6060" -endpoint="/debug/vars" -vars="requests,goroutines,errors,mem:memstats.Alloc"
+
+
  
 
 

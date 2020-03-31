@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "expvar" // Register the /debug/vars handler
 	"fmt"
 	"log"
 	"net/http"
