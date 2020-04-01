@@ -12,6 +12,7 @@ import (
 	"github.com/parjinderpannu/garagesale/internal/platform/web"
 	"github.com/parjinderpannu/garagesale/internal/product"
 	"github.com/pkg/errors"
+	"go.opencensus.io/trace"
 )
 
 // Product has handler method for dealing with Products.
@@ -22,6 +23,9 @@ type Product struct {
 
 // List is a HTTP Handler for returning a list of Products.
 func (p *Product) List(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+	ctx, span := trace.StartSpan(ctx, "handlers.Product.List")
+	defer span.End()
 
 	list, err := product.List(ctx, p.DB)
 	if err != nil {

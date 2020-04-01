@@ -8,6 +8,7 @@ import (
 	"github.com/parjinderpannu/garagesale/internal/platform/auth"
 	"github.com/parjinderpannu/garagesale/internal/platform/web"
 	"github.com/pkg/errors"
+	"go.opencensus.io/trace"
 )
 
 // ErrForbidden is returned when an authenticated user does not have a
@@ -58,6 +59,9 @@ func HasRole(roles ...string) web.Middleware {
 	f := func(after web.Handler) web.Handler {
 
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+
+			ctx, span := trace.StartSpan(ctx, "internal.mid.auth")
+			defer span.End()
 
 			claims, ok := ctx.Value(auth.Key).(auth.Claims)
 			if !ok {

@@ -14,12 +14,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"contrib.go.opencensus.io/exporter/zipkin"
+	jwt "github.com/dgrijalva/jwt-go"
+	openzipkin "github.com/openzipkin/zipkin-go"
+	zipkinHTTP "github.com/openzipkin/zipkin-go/reporter/http"
 	"github.com/parjinderpannu/garagesale/cmd/sales-api/internal/handlers"
 	"github.com/parjinderpannu/garagesale/internal/platform/auth"
 	"github.com/parjinderpannu/garagesale/internal/platform/conf"
 	"github.com/parjinderpannu/garagesale/internal/platform/database"
 	"github.com/pkg/errors"
+	"go.opencensus.io/trace"
 )
 
 func main() {
@@ -57,6 +61,11 @@ func run() error {
 			KeyID          string `conf:"default:1"`
 			PrivateKeyFile string `conf:"default:private.pem"`
 			Algorithm      string `conf:"default:RS256"`
+		}
+		Trace struct {
+			URL         string  `conf:"default:http://localhost:9411/api/v2/spans"`
+			Service     string  `conf:"default:sales-api"`
+			Probability float64 `conf:"default:1"`
 		}
 	}
 
@@ -114,6 +123,20 @@ func run() error {
 		return errors.Wrap(err, "opening db")
 	}
 	defer db.Close()
+
+	// =========================================================================
+	// Start Tracing Support
+
+	closer, err := registerTracer(
+		cfg.Trace.Service,
+		cfg.Web.Address,
+		cfg.Trace.URL,
+		cfg.Trace.Probability,
+	)
+	if err != nil {
+		return err
+	}
+	defer closer()
 
 	// =========================================================================
 	// Start Debug Service
@@ -197,4 +220,19 @@ func createAuth(privateKeyFile, keyID, algorithm string) (*auth.Authenticator, e
 	public := auth.NewSimpleKeyLookupFunc(keyID, key.Public().(*rsa.PublicKey))
 
 	return auth.NewAuthenticator(key, keyID, algorithm, public)
+}
+
+func registerTracer(service, httpAddr, traceURL string, probability float64) (func() error, error) {
+	localEndpoint, err := openzipkin.NewEndpoint(service, httpAddr)
+	if err != nil {
+		return nil, errors.Wrap(err, "creating the local zipkinEndpoint")
+	}
+	reporter := zipkinHTTP.NewReporter(traceURL)
+
+	trace.RegisterExporter(zipkin.NewExporter(reporter, localEndpoint))
+	trace.ApplyConfig(trace.Config{
+		DefaultSampler: trace.ProbabilitySampler(probability),
+	})
+
+	return reporter.Close, nil
 }

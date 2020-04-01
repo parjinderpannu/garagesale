@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"go.opencensus.io/trace"
 )
 
 // ctxKey represents the type of value for the context key.
@@ -60,6 +61,9 @@ func (a *App) Handle(method, pattern string, h Handler, mw ...Middleware) {
 		}
 
 		ctx := context.WithValue(r.Context(), KeyValues, &v)
+
+		ctx, span := trace.StartSpan(ctx, "internal.platform.web")
+		defer span.End()
 
 		if err := h(ctx, w, r); err != nil {
 			// Log the error.
